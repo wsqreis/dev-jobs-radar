@@ -1,0 +1,90 @@
+{
+  "search_metadata": {
+    "id": "demo-google-jobs-search-id",
+    "status": "Success"
+  },
+  "search_parameters": {
+    "engine": "google_jobs",
+    "q": "desenvolvedor backend remoto",
+    "location": "Brazil",
+    "hl": "pt-br",
+    "gl": "br"
+  },
+  "jobs_results": [
+    {
+      "title": "Desenvolvedor Backend Pleno",
+      "company_name": "Tech Brasil",
+      "location": "São Paulo, SP",
+      "description": "Atue com Node.js, APIs e integração com serviços em nuvem para produtos de alta escala.",
+      "thumbnail": "https://example.com/company-1.png",
+      "via": "LinkedIn",
+      "share_link": "https://www.google.com/about/careers/applications/jobs/results/1",
+      "related_links": [
+        {
+          "link": "https://example.com/jobs/backend-pleno",
+          "title": "Ver vaga"
+        }
+      ],
+      "apply_options": [
+        {
+          "link": "https://example.com/jobs/backend-pleno/apply",
+          "title": "Candidatar"
+        }
+      ],
+      "detected_extensions": {
+        "posted_at": "há 2 dias",
+        "schedule_type": "Tempo integral"
+      }
+    },
+    {
+      "title": "Software Engineer Backend",
+      "company_name": "Remote Stack",
+      "location": "Remote in Brazil",
+      "description": "Build internal platforms, APIs and data services for a distributed engineering team.",
+      "thumbnail": "https://example.com/company-2.png",
+      "via": "Wellfound",
+      "share_link": "https://www.google.com/about/careers/applications/jobs/results/2",
+      "related_links": [
+        {
+          "link": "https://example.com/jobs/software-engineer-backend",
+          "title": "Job details"
+        }
+      ],
+      "apply_options": [
+        {
+          "link": "https://example.com/jobs/software-engineer-backend/apply",
+          "title": "Apply"
+        }
+      ],
+      "detected_extensions": {
+        "posted_at": "3 days ago",
+        "schedule_type": "Full-time"
+      }
+    },
+    {
+      "title": "Engenheiro de Dados",
+      "company_name": "Dados em Foco",
+      "location": "Campinas, SP",
+      "description": "Crie pipelines, observabilidade e automações para um time de dados com foco em analytics.",
+      "thumbnail": "https://example.com/company-3.png",
+      "via": "Gupy",
+      "share_link": "https://www.google.com/about/careers/applications/jobs/results/3",
+      "related_links": [
+        {
+          "link": "https://example.com/jobs/engenheiro-de-dados",
+          "title": "Abrir descrição"
+        }
+      ],
+      "apply_options": [
+        {
+          "link": "https://example.com/jobs/engenheiro-de-dados/apply",
+          "title": "Enviar candidatura"
+        }
+      ],
+      "detected_extensions": {
+        "posted_at": "há 1 dia",
+        "schedule_type": "Híbrido"
+      }
+    }
+  ]
+}
