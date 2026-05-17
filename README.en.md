@@ -2,40 +2,108 @@
 
 Dev Jobs Radar is an open-source app for tracking tech jobs relevant to developers in Brazil, Portugal, and remote-first teams.
 
-## What this project delivers
+- Overview: [README.md](README.md)
+- Guia em português: [README.pt-BR.md](README.pt-BR.md)
+- Architecture notes: [docs/architecture.md](docs/architecture.md)
 
-- Google Jobs integration through a JavaScript SDK
-- a Next.js + TypeScript web interface
-- a CLI that reuses the same search and normalization layer
-- a demo mode for people who want to run the project without credentials
-- bilingual documentation designed for GitHub and a technical article
+## What the product does today
 
-## Why this use case works
+- searches Google Jobs through a shared server-side search layer
+- supports both demo mode and live mode
+- falls back to demo mode with a visible warning when live mode cannot be fulfilled
+- includes presets for Brazil, Portugal, backend, frontend, and data/AI searches
+- supports native date filters for:
+  - last 24 hours
+  - last 3 days
+  - last week
+- supports a page-size selector and next/previous pagination
+- exposes the same normalized response through the UI, the local `/api/jobs` route, and the CLI
+- includes a technical inspector showing the normalized request, raw summary, and ready-to-use examples
+- shows app-specific loading states during search and pagination
 
-Job searching is still noisy for many developers in Brazil. Repeated searches, inconsistent filters, and too many tabs make it hard to compare patterns across roles, locations, and work formats. This project turns that manual process into something easier to inspect, reuse, and share.
+## Presets
 
-## Stack
+Current presets:
 
-- Next.js 16
-- React 19
-- TypeScript
-- Tailwind CSS
-- JavaScript SDK for structured search data
-- Vitest
-- Playwright
-- tsx for the CLI
+- `backend-br` — Backend remoto Brasil
+- `data-ai-br` — Dados e IA Brasil
+- `frontend-remote` — Frontend remoto
+- `portugal-remote` — Portugal remoto
 
-## Current features
+Selecting a preset updates the query, location, `gl`, and `hl` values in the URL.
 
-- PT-BR dashboard with Brazil and Portugal presets
-- URL-based filters for shareable searches
-- normalized job cards
-- demo mode backed by a local fixture
-- `/api/jobs` route returning the same shape used by the UI
-- terminal-friendly CLI output
-- technical inspector panel showing the request, raw summary, and ready-to-use examples
+## Search, filters, and URL state
 
-## Getting started
+All search state is URL-driven and resolved through the same shared layer used by both the page and the local API.
+
+Supported request parameters today:
+
+- `preset`
+- `q`
+- `location`
+- `gl`
+- `hl`
+- `mode`
+- `datePosted`
+- `pageSize`
+- `page`
+- `pageToken`
+- `pageTokenTrail`
+
+Supported date filters:
+
+- `24h`
+- `3d`
+- `7d`
+
+## Pagination
+
+Pagination matches the real provider behavior:
+
+- in demo mode, pagination is simulated locally from the fixture data
+- in live mode, navigation uses the next-page token returned by the provider
+- the app stores pagination state in the URL using:
+  - `page`
+  - `pageToken`
+  - `pageTokenTrail`
+
+The UI currently exposes:
+
+- a page-size selector
+- `Anterior`
+- `Próxima`
+
+## Demo mode vs live mode
+
+### Demo mode
+
+- works without credentials
+- uses the fixture in `src/tests/fixtures/google-jobs-sample.json`
+- is the safest way to explore the app locally
+
+### Live mode
+
+- requires `SERPAPI_API_KEY`
+- uses the live Google Jobs integration
+- if live mode is requested without a valid key, the app falls back to demo mode with a warning instead of crashing
+
+## CLI and local API
+
+The CLI reuses the same request parsing and search logic as the web UI.
+
+CLI command:
+
+```bash
+npm run cli -- --mode demo --preset backend-br
+```
+
+Example local API request:
+
+```bash
+curl "http://localhost:3000/api/jobs?mode=demo&preset=backend-br&pageSize=5&page=1&datePosted=24h"
+```
+
+## Local development
 
 ### 1. Install dependencies
 
@@ -52,10 +120,12 @@ SERPAPI_API_KEY=
 SERPAPI_DEMO_MODE=true
 ```
 
-- When `SERPAPI_DEMO_MODE=true`, the app uses local fixture data by default.
-- To test the live API, provide `SERPAPI_API_KEY` and use `mode=live` in the UI or `--mode live` in the CLI.
+Notes:
 
-### 3. Run the web app
+- `SERPAPI_DEMO_MODE=true` keeps demo mode as the default local path.
+- To validate live searches, set `SERPAPI_API_KEY` and use `mode=live`.
+
+### 3. Run the app
 
 ```bash
 npm run dev
@@ -63,62 +133,14 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-### 4. Run the CLI
-
-```bash
-npm run cli -- --mode demo --preset backend-br
-```
-
-Custom query example:
-
-```bash
-npm run cli -- --mode demo --query "data engineer remote" --location Brazil --gl br --hl pt-br
-```
-
-## Usage examples
-
-### Query the local project API
-
-```bash
-curl "http://localhost:3000/api/jobs?mode=demo&preset=backend-br"
-```
-
-### Example with the SDK used in this project
-
-```ts
-import { getJson } from "serpapi";
-
-const jobs = await getJson({
-  api_key: process.env.SERPAPI_API_KEY,
-  engine: "google_jobs",
-  q: "desenvolvedor backend remoto",
-  location: "Brazil",
-  gl: "br",
-  hl: "pt-br",
-  num: 10,
-});
-```
-
-## Project structure
-
-```text
-src/app                     Next.js application
-src/app/api/jobs            local API route
-src/components              interface components
-src/lib/jobs                types, presets, normalization, and insights
-src/lib/serpapi             SDK integration
-scripts/dev-jobs-radar.ts   project CLI
-src/tests                   unit and integration tests
-docs                        architecture and editorial material
-```
-
-## Verification
+## Verification commands
 
 ```bash
 npm run lint
 npm run typecheck
 npm run test
 npm run build
+npm run test:e2e
 ```
 
 Quick CLI check:
@@ -127,12 +149,10 @@ Quick CLI check:
 npm run cli -- --mode demo --preset backend-br
 ```
 
-## Suggested companion article
+## Related docs
 
-**Recommended title:**
-
-What a Job Radar Reveals About Backend, Data, and AI Roles in Brazil
-
-**Recommended angle:**
-
-Use the radar as a reporting tool to discuss hiring signals, recurring terms, locations, and work formats. The product supports the analysis instead of acting as the main promotional angle.
+- [README.md](README.md)
+- [README.pt-BR.md](README.pt-BR.md)
+- [docs/architecture.md](docs/architecture.md)
+- [docs/walkthrough-pt-br.md](docs/walkthrough-pt-br.md)
+- [docs/blog-post-outline.md](docs/blog-post-outline.md)

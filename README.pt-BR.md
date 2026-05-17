@@ -1,39 +1,107 @@
 # Dev Jobs Radar
 
-Dev Jobs Radar é um projeto open-source para acompanhar vagas de tecnologia com foco em Brasil, Portugal e trabalho remoto.
+Dev Jobs Radar é uma aplicação open-source para acompanhar vagas de tecnologia com foco em Brasil, Portugal e times remotos.
 
-## O que este projeto entrega
+- Visão geral: [README.md](README.md)
+- Guide in English: [README.en.md](README.en.md)
+- Arquitetura: [docs/architecture.md](docs/architecture.md)
 
-- integração com resultados de Google Jobs usando um SDK JavaScript
-- interface web em Next.js + TypeScript
-- CLI reutilizando a mesma camada de busca e normalização
-- modo demo para rodar o projeto sem chave
-- documentação bilíngue pensada para GitHub e artigo técnico
+## O que o produto faz hoje
 
-## Por que este caso de uso faz sentido
+- busca vagas do Google Jobs por meio de uma camada compartilhada no servidor
+- suporta modo demo e modo live
+- cai para demo mode com aviso visível quando o live mode não pode ser executado
+- inclui presets para Brasil, Portugal, backend, frontend e dados/IA
+- suporta filtros nativos de data para:
+  - últimas 24 horas
+  - últimos 3 dias
+  - última semana
+- suporta seletor de resultados por página e paginação com `Anterior` / `Próxima`
+- expõe a mesma resposta normalizada na UI, na rota local `/api/jobs` e na CLI
+- inclui um painel técnico com request normalizada, resumo cru e exemplos prontos de uso
+- mostra estados próprios de loading durante busca e paginação
 
-Buscar vagas ainda é um processo cheio de ruído para muita gente no mercado brasileiro. Entre buscas repetitivas, filtros inconsistentes e excesso de abas abertas, sobra pouco contexto sobre quais termos, formatos e localidades realmente aparecem com frequência. O objetivo deste projeto é transformar esse trabalho manual em uma experiência mais clara, reutilizável e comparável.
+## Presets
 
-## Stack
+Presets atuais:
 
-- Next.js 16
-- React 19
-- TypeScript
-- Tailwind CSS
-- SDK JavaScript para busca estruturada
-- Vitest
-- Playwright
-- tsx para a CLI
+- `backend-br` — Backend remoto Brasil
+- `data-ai-br` — Dados e IA Brasil
+- `frontend-remote` — Frontend remoto
+- `portugal-remote` — Portugal remoto
 
-## Funcionalidades atuais
+Ao selecionar um preset, a aplicação atualiza a query, a localização, `gl` e `hl` na URL.
 
-- dashboard PT-BR com presets para Brasil e Portugal
-- filtros via URL para buscas compartilháveis
-- cards de vagas com dados normalizados
-- modo demo com fixture local
-- rota `/api/jobs` retornando a mesma estrutura usada na UI
-- CLI com saída legível para terminal
-- painel técnico com request, resumo cru e exemplos de uso
+## Busca, filtros e URL
+
+Todo o estado da busca é resolvido pela URL e passa pela mesma camada compartilhada usada pela página e pela API local.
+
+Parâmetros suportados hoje:
+
+- `preset`
+- `q`
+- `location`
+- `gl`
+- `hl`
+- `mode`
+- `datePosted`
+- `pageSize`
+- `page`
+- `pageToken`
+- `pageTokenTrail`
+
+Filtros de data suportados:
+
+- `24h`
+- `3d`
+- `7d`
+
+## Paginação
+
+A paginação respeita o comportamento real da busca:
+
+- no demo mode, a paginação é feita sobre a fixture local
+- no live mode, a navegação usa o token de próxima página retornado pelo provider
+- a aplicação guarda o estado na URL usando:
+  - `page`
+  - `pageToken`
+  - `pageTokenTrail`
+
+A interface expõe:
+
+- seletor de quantidade por página
+- botão `Anterior`
+- botão `Próxima`
+
+## Demo mode vs live mode
+
+### Demo mode
+
+- funciona sem credenciais
+- usa a fixture em `src/tests/fixtures/google-jobs-sample.json`
+- é o caminho mais seguro para explorar a app localmente
+
+### Live mode
+
+- requer `SERPAPI_API_KEY`
+- usa a integração real com Google Jobs
+- se o live mode for solicitado sem uma chave válida, a app volta para demo mode com aviso em vez de quebrar
+
+## CLI e API local
+
+A CLI reaproveita exatamente a mesma resolução de request e a mesma lógica de busca da UI.
+
+Comando da CLI:
+
+```bash
+npm run cli -- --mode demo --preset backend-br
+```
+
+Exemplo de chamada à API local:
+
+```bash
+curl "http://localhost:3000/api/jobs?mode=demo&preset=backend-br&pageSize=5&page=1&datePosted=24h"
+```
 
 ## Como rodar
 
@@ -52,65 +120,18 @@ SERPAPI_API_KEY=
 SERPAPI_DEMO_MODE=true
 ```
 
-- Se `SERPAPI_DEMO_MODE=true`, o projeto usa fixture local por padrão.
-- Para testar a API real, defina `SERPAPI_API_KEY` e use `mode=live` na UI ou `--mode live` na CLI.
+Notas:
 
-### 3. Rode a aplicação web
+- `SERPAPI_DEMO_MODE=true` mantém o demo mode como caminho padrão no ambiente local.
+- Para validar buscas reais, defina `SERPAPI_API_KEY` e use `mode=live`.
+
+### 3. Rode a aplicação
 
 ```bash
 npm run dev
 ```
 
 Abra `http://localhost:3000`.
-
-### 4. Rode a CLI
-
-```bash
-npm run cli -- --mode demo --preset backend-br
-```
-
-Exemplo com query customizada:
-
-```bash
-npm run cli -- --mode demo --query "engenheiro de dados remoto" --location Brazil --gl br --hl pt-br
-```
-
-## Exemplos de uso
-
-### Buscar pela API local do projeto
-
-```bash
-curl "http://localhost:3000/api/jobs?mode=demo&preset=backend-br"
-```
-
-### Exemplo com o SDK usado no projeto
-
-```ts
-import { getJson } from "serpapi";
-
-const jobs = await getJson({
-  api_key: process.env.SERPAPI_API_KEY,
-  engine: "google_jobs",
-  q: "desenvolvedor backend remoto",
-  location: "Brazil",
-  gl: "br",
-  hl: "pt-br",
-  num: 10,
-});
-```
-
-## Estrutura do projeto
-
-```text
-src/app                     aplicação Next.js
-src/app/api/jobs            rota da API local
-src/components              componentes da interface
-src/lib/jobs                tipos, presets, normalização e insights
-src/lib/serpapi             integração com o SDK
-scripts/dev-jobs-radar.ts   CLI do projeto
-src/tests                   testes unitários e de integração
-docs                        arquitetura e material editorial
-```
 
 ## Verificação
 
@@ -119,6 +140,7 @@ npm run lint
 npm run typecheck
 npm run test
 npm run build
+npm run test:e2e
 ```
 
 Teste rápido da CLI:
@@ -127,19 +149,10 @@ Teste rápido da CLI:
 npm run cli -- --mode demo --preset backend-br
 ```
 
-## Roadmap próximo
+## Documentação relacionada
 
-- adicionar screenshots e GIFs para o README
-- expandir a CLI com exportação JSON ou Markdown
-- adicionar mais presets para mobile, frontend e data roles
-- incluir uma versão pública hospedada
-
-## Conteúdo para acompanhar a publicação
-
-**Título sugerido do post:**
-
-O que um radar de vagas revela sobre backend, dados e IA no mercado brasileiro
-
-**Ângulo sugerido:**
-
-Usar o radar como ferramenta de observação para discutir padrões de contratação, termos recorrentes, localidades e formatos de trabalho. O projeto aparece como suporte para a análise, não como protagonista promocional do texto.
+- [README.md](README.md)
+- [README.en.md](README.en.md)
+- [docs/architecture.md](docs/architecture.md)
+- [docs/walkthrough-pt-br.md](docs/walkthrough-pt-br.md)
+- [docs/blog-post-outline.md](docs/blog-post-outline.md)
