@@ -1,80 +1,132 @@
-const milestones = [
-  "Integração com Google Jobs via SerpApi",
-  "Dashboard PT-BR com filtros e presets",
-  "Modo demo sem chave para avaliação pública",
-  "CLI para buscas e exportação de resultados",
-  "README bilíngue e documentação para blog post",
-];
+import { JobsList } from "@/components/jobs/JobsList";
+import { SearchForm } from "@/components/filters/SearchForm";
+import { StatCard } from "@/components/shared/StatCard";
+import { resolveJobSearchRequest } from "@/lib/jobs/presets";
+import { searchJobs } from "@/lib/jobs/searchJobs";
 
-export default function Home() {
+type HomePageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function toSearchParamsRecord(
+  searchParams: Record<string, string | string[] | undefined>,
+) {
+  const params = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(searchParams)) {
+    if (typeof value === "string") {
+      params.set(key, value);
+      continue;
+    }
+
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        params.append(key, item);
+      }
+    }
+  }
+
+  return params;
+}
+
+export default async function Home({ searchParams }: HomePageProps) {
+  const resolvedSearchParams = await searchParams;
+  const request = resolveJobSearchRequest(toSearchParamsRecord(resolvedSearchParams));
+  const response = await searchJobs(request);
+
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.16),_transparent_40%),linear-gradient(180deg,_#0f172a_0%,_#111827_100%)] px-6 py-16 text-slate-50 sm:px-10 lg:px-16">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-12">
-        <section className="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-slate-950/30 backdrop-blur sm:p-10">
-          <div className="flex flex-col gap-6">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.18),_transparent_35%),linear-gradient(180deg,_#0f172a_0%,_#111827_100%)] px-6 py-12 text-slate-50 sm:px-10 lg:px-16">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
+        <section className="grid gap-6 rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl shadow-slate-950/30 backdrop-blur xl:grid-cols-[1.15fr_0.85fr] xl:p-10">
+          <div className="space-y-5">
             <div className="flex flex-wrap items-center gap-3 text-sm text-sky-200">
               <span className="rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1">
                 Portfólio DevRel
               </span>
               <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1">
-                SerpApi + Next.js
+                SerpApi Google Jobs
               </span>
               <span className="rounded-full border border-violet-400/30 bg-violet-400/10 px-3 py-1">
-                Brasil + Portugal
+                PT-BR first
               </span>
             </div>
 
-            <div className="max-w-3xl space-y-4">
+            <div className="space-y-4">
               <p className="text-sm font-medium uppercase tracking-[0.24em] text-sky-200">
                 Dev Jobs Radar
               </p>
-              <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-                Radar de vagas para devs com foco no mercado lusófono.
+              <h1 className="max-w-4xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+                Descubra vagas de tecnologia com foco em Brasil, Portugal e trabalho remoto.
               </h1>
-              <p className="text-lg leading-8 text-slate-300">
-                Este projeto usa SerpApi para transformar buscas de vagas em uma
-                experiência útil para desenvolvedores brasileiros e portugueses.
-                O repositório será construído como um portfólio público, com web
-                UI, CLI e documentação bilíngue.
+              <p className="max-w-3xl text-lg leading-8 text-slate-300">
+                Um radar de vagas construído com SerpApi, Next.js e TypeScript para demonstrar integração técnica, utilidade real e narrativa de conteúdo para a comunidade lusófona.
               </p>
             </div>
           </div>
+
+          <div className="grid gap-4 sm:grid-cols-3 xl:grid-cols-1">
+            <StatCard
+              label="Modo ativo"
+              value={response.meta.resolvedMode === "demo" ? "Demo" : "Live"}
+              detail={response.meta.source === "fixture" ? "Usando fixture pública para avaliação rápida." : "Consultando a API da SerpApi em tempo real."}
+            />
+            <StatCard
+              label="Resultados"
+              value={String(response.meta.totalJobs)}
+              detail={`Busca atual: ${response.request.query}`}
+            />
+            <StatCard
+              label="Local base"
+              value={response.request.location}
+              detail={`gl=${response.request.gl} · hl=${response.request.hl}`}
+            />
+          </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <article className="rounded-3xl border border-white/10 bg-slate-900/70 p-8">
-            <h2 className="text-2xl font-semibold text-white">
-              Escopo desta primeira entrega
-            </h2>
-            <ul className="mt-6 space-y-4 text-slate-300">
-              {milestones.map((item) => (
-                <li
-                  key={item}
-                  className="flex items-start gap-3 rounded-2xl border border-white/5 bg-white/5 px-4 py-3"
-                >
-                  <span className="mt-1 h-2.5 w-2.5 rounded-full bg-sky-400" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </article>
+        <SearchForm request={response.request} />
 
-          <aside className="rounded-3xl border border-white/10 bg-slate-900/70 p-8">
-            <h2 className="text-2xl font-semibold text-white">Próximos passos</h2>
-            <div className="mt-6 space-y-5 text-sm leading-7 text-slate-300">
+        <section className="grid gap-4 md:grid-cols-3">
+          <StatCard
+            label="Empresa em destaque"
+            value={response.insights.topCompanies[0]?.name ?? "Sem dados"}
+            detail={response.insights.topCompanies[0] ? `${response.insights.topCompanies[0].count} vaga(s)` : undefined}
+          />
+          <StatCard
+            label="Local mais frequente"
+            value={response.insights.topLocations[0]?.name ?? "Sem dados"}
+            detail={response.insights.topLocations[0] ? `${response.insights.topLocations[0].count} vaga(s)` : undefined}
+          />
+          <StatCard
+            label="Formato comum"
+            value={response.insights.topSchedules[0]?.name ?? "Sem dados"}
+            detail={response.insights.topSchedules[0] ? `${response.insights.topSchedules[0].count} vaga(s)` : undefined}
+          />
+        </section>
+
+        <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold text-white">Vagas encontradas</h2>
+                <p className="text-sm text-slate-400">
+                  Resultados normalizados para uso em UI e CLI.
+                </p>
+              </div>
+            </div>
+            <JobsList jobs={response.jobs} />
+          </div>
+
+          <aside className="rounded-3xl border border-white/10 bg-slate-900/70 p-6">
+            <h2 className="text-xl font-semibold text-white">Resumo técnico</h2>
+            <div className="mt-4 space-y-4 text-sm leading-7 text-slate-300">
               <p>
-                A próxima milestone adiciona a camada de integração com a Google
-                Jobs API da SerpApi e um modo demo com fixture local.
+                Esta página lê os filtros diretamente da URL, resolve o modo demo ou live no servidor e usa a mesma camada compartilhada que abastece a rota <strong>/api/jobs</strong>.
               </p>
               <p>
-                Depois disso, a home será substituída por um dashboard com
-                presets, filtros, cards de vaga e um painel para mostrar a
-                integração técnica usada no projeto.
+                A próxima milestone adiciona um CLI reutilizando essa mesma lógica, junto com um painel de inspeção da request e da resposta normalizada.
               </p>
               <p>
-                O objetivo é que qualquer recrutador ou desenvolvedor consiga
-                rodar o projeto rapidamente e entender tanto o produto quanto a
-                implementação.
+                Isso transforma o projeto em um exemplo útil para portfólio, documentação e conteúdo técnico em português.
               </p>
             </div>
           </aside>
