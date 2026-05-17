@@ -37,6 +37,9 @@ async function main() {
   console.log("\nDev Jobs Radar CLI\n");
   console.log(`Modo: ${response.meta.resolvedMode}`);
   console.log(`Fonte: ${response.meta.source}`);
+  if (response.meta.warning) {
+    console.log(`Aviso: ${response.meta.warning}`);
+  }
   console.log(`Busca: ${response.request.query}`);
   console.log(`Local: ${response.request.location}`);
   console.log(`Resultados: ${response.meta.totalJobs}\n`);

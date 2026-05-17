@@ -1,7 +1,20 @@
 import type { JobLink, NormalizedJob } from "@/lib/jobs/types";
 
+function fixMojibake(value: string) {
+  if (!/[ÃÂ]/.test(value)) {
+    return value;
+  }
+
+  try {
+    const decoded = Buffer.from(value, "latin1").toString("utf8");
+    return decoded.includes("�") ? value : decoded;
+  } catch {
+    return value;
+  }
+}
+
 function toText(value: unknown, fallback = ""): string {
-  return typeof value === "string" ? value.trim() : fallback;
+  return typeof value === "string" ? fixMojibake(value).trim() : fallback;
 }
 
 function toLinks(value: unknown): JobLink[] {

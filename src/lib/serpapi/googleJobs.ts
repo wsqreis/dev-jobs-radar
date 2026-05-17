@@ -1,6 +1,27 @@
 import { getSerpApiKey } from "@/lib/env";
-import type { JobSearchRequest } from "@/lib/jobs/types";
+import type { DatePostedFilter, JobSearchRequest } from "@/lib/jobs/types";
 import { runSerpApiSearch } from "@/lib/serpapi/client";
+
+function buildDatePostedSuffix(datePosted?: DatePostedFilter) {
+  if (datePosted === "24h") {
+    return "since yesterday";
+  }
+
+  if (datePosted === "3d") {
+    return "in the last 3 days";
+  }
+
+  if (datePosted === "7d") {
+    return "in the last week";
+  }
+
+  return undefined;
+}
+
+export function buildGoogleJobsQuery(request: JobSearchRequest) {
+  const datePostedSuffix = buildDatePostedSuffix(request.datePosted);
+  return datePostedSuffix ? `${request.query} ${datePostedSuffix}` : request.query;
+}
 
 export function buildGoogleJobsParams(
   request: JobSearchRequest,
@@ -13,12 +34,13 @@ export function buildGoogleJobsParams(
   return {
     engine: "google_jobs",
     api_key: apiKey,
-    q: request.query,
+    q: buildGoogleJobsQuery(request),
     location: request.location,
     gl: request.gl,
     hl: request.hl,
     chips: request.chips,
-    num: request.num,
+    num: request.pageSize,
+    next_page_token: request.pageToken,
   };
 }
 

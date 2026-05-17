@@ -14,20 +14,31 @@ export function resolveRuntimeMode(
   apiKey = getSerpApiKey(),
 ) {
   if (requestedMode === "demo") {
-    return "demo" as const;
+    return {
+      resolvedMode: "demo" as const,
+    };
   }
 
   if (requestedMode === "live") {
     if (!apiKey) {
-      throw new Error("Live mode requires SERPAPI_API_KEY.");
+      return {
+        resolvedMode: "demo" as const,
+        warning: "Live mode requested without SERPAPI_API_KEY. Falling back to demo mode.",
+      };
     }
 
-    return "live" as const;
+    return {
+      resolvedMode: "live" as const,
+    };
   }
 
   if (apiKey && !isDemoModeEnabled()) {
-    return "live" as const;
+    return {
+      resolvedMode: "live" as const,
+    };
   }
 
-  return "demo" as const;
+  return {
+    resolvedMode: "demo" as const,
+  };
 }

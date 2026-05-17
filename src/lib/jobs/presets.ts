@@ -1,4 +1,5 @@
 import {
+  type DatePostedFilter,
   type JobSearchPreset,
   type JobSearchPresetId,
   type JobSearchRequest,
@@ -66,6 +67,26 @@ function getPositiveInt(value?: string | null): number | undefined {
   return parsed;
 }
 
+function getPageTokenTrail(value?: string | null) {
+  return (value ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function getPageSize(value?: string | null) {
+  const parsed = getPositiveInt(value) ?? 10;
+  return Math.min(parsed, 10);
+}
+
+function getDatePostedFilter(value?: string | null): DatePostedFilter | undefined {
+  if (value === "24h" || value === "3d" || value === "7d") {
+    return value;
+  }
+
+  return undefined;
+}
+
 export function resolveJobSearchRequest(
   searchParams: URLSearchParams,
 ): JobSearchRequest {
@@ -82,7 +103,11 @@ export function resolveJobSearchRequest(
     gl: searchParams.get("gl")?.trim() || preset.gl,
     hl: searchParams.get("hl")?.trim() || preset.hl,
     chips: searchParams.get("chips")?.trim() || preset.chips,
-    num: Math.min(getPositiveInt(searchParams.get("num")) ?? 10, 20),
+    datePosted: getDatePostedFilter(searchParams.get("datePosted")),
+    pageSize: getPageSize(searchParams.get("pageSize") ?? searchParams.get("num")),
+    page: getPositiveInt(searchParams.get("page")) ?? 1,
+    pageToken: searchParams.get("pageToken")?.trim() || undefined,
+    pageTokenTrail: getPageTokenTrail(searchParams.get("pageTokenTrail")),
     preset: preset.id,
     mode: getSearchMode(searchParams.get("mode")),
   };

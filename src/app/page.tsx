@@ -74,7 +74,7 @@ export default async function Home({ searchParams }: HomePageProps) {
             <StatCard
               label="Resultados"
               value={String(response.meta.totalJobs)}
-              detail={`Busca atual: ${response.request.query}`}
+              detail={`Página ${response.meta.pageIndex} · busca atual: ${response.request.query}`}
             />
             <StatCard
               label="Local base"
@@ -85,6 +85,12 @@ export default async function Home({ searchParams }: HomePageProps) {
         </section>
 
         <SearchForm request={response.request} />
+
+        {response.meta.warning ? (
+          <section className="rounded-3xl border border-amber-400/30 bg-amber-400/10 px-5 py-4 text-sm text-amber-100">
+            {response.meta.warning}
+          </section>
+        ) : null}
 
         <section className="grid gap-4 md:grid-cols-3">
           <StatCard
@@ -114,7 +120,7 @@ export default async function Home({ searchParams }: HomePageProps) {
                 </p>
               </div>
             </div>
-            <JobsList jobs={response.jobs} />
+            <JobsList jobs={response.jobs} meta={response.meta} request={response.request} />
           </div>
 
           <aside className="rounded-3xl border border-white/10 bg-slate-900/70 p-6">

@@ -27,4 +27,35 @@ describe("normalizeJobResults", () => {
     });
     expect(insights.topLocations).toHaveLength(3);
   });
+
+  it("fixes mojibake in live text fields", () => {
+    const jobs = normalizeJobResults({
+      jobs_results: [
+        {
+          title: "DescriÃ§Ã£o da vaga",
+          company_name: "Companhia do PaÃ­s",
+          location: "SÃ£o Paulo, SP",
+          description: "IntegraÃ§Ã£o com serviÃ§os em nuvem e evoluÃ§Ã£o contÃ­nua.",
+          detected_extensions: {
+            posted_at: "hÃ¡ 2 dias",
+            schedule_type: "Tempo integral",
+          },
+          apply_options: [
+            {
+              title: "Candidatar-se",
+              link: "https://example.com/apply",
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(jobs[0]).toMatchObject({
+      title: "Descrição da vaga",
+      companyName: "Companhia do País",
+      location: "São Paulo, SP",
+      description: "Integração com serviços em nuvem e evolução contínua.",
+      postedAt: "há 2 dias",
+    });
+  });
 });

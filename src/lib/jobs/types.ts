@@ -1,4 +1,5 @@
 export type SearchMode = "auto" | "demo" | "live";
+export type DatePostedFilter = "24h" | "3d" | "7d";
 
 export type JobSearchPresetId =
   | "backend-br"
@@ -22,7 +23,11 @@ export interface JobSearchRequest {
   gl: string;
   hl: string;
   chips?: string;
-  num: number;
+  datePosted?: DatePostedFilter;
+  pageSize: number;
+  page: number;
+  pageToken?: string;
+  pageTokenTrail: string[];
   preset?: JobSearchPresetId;
   mode: SearchMode;
 }
@@ -59,6 +64,12 @@ export interface JobsResponseMeta {
   source: "fixture" | "serpapi";
   totalJobs: number;
   searchId?: string;
+  warning?: string;
+  pageIndex: number;
+  pageSize: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+  nextPageToken?: string;
 }
 
 export interface JobsSearchResponse {
@@ -69,6 +80,7 @@ export interface JobsSearchResponse {
   raw: {
     searchMetadata?: Record<string, unknown>;
     searchParameters?: Record<string, unknown>;
+    pagination?: Record<string, unknown>;
   };
   examples: {
     cli: string;

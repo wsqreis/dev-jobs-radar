@@ -41,7 +41,7 @@ export function JobCard({ job }: JobCardProps) {
           {job.applyOptions.slice(0, 2).map((option) => (
             <a
               key={`${job.id}-${option.url}`}
-              className="rounded-full bg-white px-4 py-2 text-center text-sm font-medium text-slate-950 transition hover:bg-slate-200"
+              className="rounded-full border border-sky-300 bg-sky-300 px-4 py-2 text-center text-sm font-semibold text-slate-950 transition hover:border-sky-200 hover:bg-sky-200"
               href={option.url}
               rel="noreferrer"
               target="_blank"
