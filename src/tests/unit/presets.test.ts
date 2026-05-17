@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_PRESET_ID, resolveJobSearchRequest } from "@/lib/jobs/presets";
+import {
+  DEFAULT_PRESET_ID,
+  getPresetById,
+  resolveJobSearchRequest,
+} from "@/lib/jobs/presets";
 
 describe("resolveJobSearchRequest", () => {
   it("falls back to the default preset", () => {
@@ -11,11 +15,18 @@ describe("resolveJobSearchRequest", () => {
   });
 
   it("applies URL overrides over preset values", () => {
+    const preset = getPresetById("portugal-remote");
+    if (!preset) {
+      throw new Error("Expected preset to exist.");
+    }
+
     const request = resolveJobSearchRequest(
       new URLSearchParams({
         preset: "portugal-remote",
         q: "typescript remoto",
         location: "Lisbon",
+        gl: preset.gl,
+        hl: preset.hl,
         mode: "demo",
         num: "25",
       }),

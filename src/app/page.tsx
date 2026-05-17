@@ -1,3 +1,4 @@
+import { DeveloperInspector } from "@/components/developer-inspector/DeveloperInspector";
 import { JobsList } from "@/components/jobs/JobsList";
 import { SearchForm } from "@/components/filters/SearchForm";
 import { StatCard } from "@/components/shared/StatCard";
@@ -123,14 +124,16 @@ export default async function Home({ searchParams }: HomePageProps) {
                 Esta página lê os filtros diretamente da URL, resolve o modo demo ou live no servidor e usa a mesma camada compartilhada que abastece a rota <strong>/api/jobs</strong>.
               </p>
               <p>
-                A próxima milestone adiciona um CLI reutilizando essa mesma lógica, junto com um painel de inspeção da request e da resposta normalizada.
+                O CLI reaproveita exatamente a mesma função de busca e o mesmo processo de normalização, o que facilita transformar esta demo em conteúdo técnico ou automações simples.
               </p>
               <p>
-                Isso transforma o projeto em um exemplo útil para portfólio, documentação e conteúdo técnico em português.
+                O Developer Inspector deixa visível o caminho completo entre a query da pessoa usuária, a chamada do SDK e a resposta resumida que vai para a interface.
               </p>
             </div>
           </aside>
         </section>
+
+        <DeveloperInspector response={response} />
       </div>
     </main>
   );

@@ -70,4 +70,8 @@ export interface JobsSearchResponse {
     searchMetadata?: Record<string, unknown>;
     searchParameters?: Record<string, unknown>;
   };
+  examples: {
+    cli: string;
+    sdk: string;
+  };
 }

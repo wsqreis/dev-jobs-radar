@@ -1,6 +1,7 @@
 import fixtureData from "@/tests/fixtures/google-jobs-sample.json";
 import { resolveRuntimeMode } from "@/lib/env";
 import { extractInsights } from "@/lib/jobs/extractInsights";
+import { buildCliExample, buildSdkExample } from "@/lib/jobs/formatExamples";
 import { normalizeJobResults } from "@/lib/jobs/normalizeJob";
 import type {
   JobSearchRequest,
@@ -47,5 +48,9 @@ export async function searchJobs(
     jobs,
     insights: extractInsights(jobs),
     raw: getRawSummary(rawResponse),
+    examples: {
+      cli: buildCliExample(request),
+      sdk: buildSdkExample(request),
+    },
   };
 }
