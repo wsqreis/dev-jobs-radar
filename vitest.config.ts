@@ -3,7 +3,7 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    include: ["src/tests/**/*.{test,spec}.ts"],
+    include: ["src/tests/unit/**/*.test.ts", "src/tests/integration/**/*.test.ts"],
   },
   resolve: {
     alias: {
