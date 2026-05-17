@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Dev Jobs Radar",
   description:
-    "Radar de vagas para desenvolvedores brasileiros e portugueses com SerpApi, Next.js e TypeScript.",
+    "Radar de vagas para backend, dados, IA e trabalho remoto com foco em Brasil e Portugal.",
 };
 
 export default function RootLayout({

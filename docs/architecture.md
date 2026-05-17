@@ -7,7 +7,7 @@ Dev Jobs Radar is organized as a single Next.js application with a shared TypeSc
 1. The user triggers a search from the web form or the CLI.
 2. The request is normalized by `resolveJobSearchRequest`.
 3. `searchJobs` decides whether to use demo or live mode.
-4. In live mode, the SerpApi adapter sends a `google_jobs` request through the official SDK.
+4. In live mode, the search adapter sends a `google_jobs` request through the configured SDK.
 5. Raw results are normalized into a stable internal shape.
 6. Insights and copyable examples are generated from the normalized response.
 7. The web UI and the CLI render the same data model.
@@ -24,7 +24,7 @@ Acts as the shared orchestration layer for the app. It decides the runtime mode,
 
 ### `src/lib/serpapi/googleJobs.ts`
 
-Builds the `google_jobs` request for SerpApi and keeps SDK details out of the page and CLI layers.
+Builds the `google_jobs` request and keeps SDK details out of the page and CLI layers.
 
 ### `src/app/api/jobs/route.ts`
 
@@ -40,18 +40,18 @@ Provides a terminal interface that reuses the same search logic as the UI.
 
 - uses `src/tests/fixtures/google-jobs-sample.json`
 - works without credentials
-- ideal for GitHub reviewers and screenshots
+- ideal for screenshots, quick reviews, and local onboarding
 
 ### Live mode
 
 - requires `SERPAPI_API_KEY`
-- calls SerpApi with the `google_jobs` engine
+- calls the `google_jobs` engine
 - useful when validating the real integration and producing updated examples
 
-## Why this shape works well for a portfolio repo
+## Why this shape works well in practice
 
 - keeps secrets server-side in the web app
 - avoids duplicate data-mapping logic between interfaces
-- makes the project easy to explain in a blog post
-- gives reviewers a working demo path even without API access
-- highlights both technical implementation and educational presentation
+- makes the project easier to test and extend
+- gives anyone a working demo path even without API access
+- keeps the technical documentation close to the product behavior

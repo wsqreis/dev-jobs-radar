@@ -1,18 +1,18 @@
 # Dev Jobs Radar
 
-Dev Jobs Radar é um projeto open-source criado para demonstrar como a SerpApi pode ser usada para construir uma experiência útil de descoberta de vagas para desenvolvedores brasileiros e do mercado lusófono.
+Dev Jobs Radar é um projeto open-source para acompanhar vagas de tecnologia com foco em Brasil, Portugal e trabalho remoto.
 
-## O que este projeto demonstra
+## O que este projeto entrega
 
-- integração prática com a Google Jobs API da SerpApi usando o SDK oficial em JavaScript
-- uma interface web em Next.js + TypeScript
-- uma CLI reutilizando a mesma camada de busca e normalização
-- um modo demo para quem quiser rodar o projeto sem chave
-- documentação bilíngue pensada para portfólio, GitHub e blog post técnico
+- integração com resultados de Google Jobs usando um SDK JavaScript
+- interface web em Next.js + TypeScript
+- CLI reutilizando a mesma camada de busca e normalização
+- modo demo para rodar o projeto sem chave
+- documentação bilíngue pensada para GitHub e artigo técnico
 
 ## Por que este caso de uso faz sentido
 
-Acompanhar vagas relevantes ainda é um problema real para devs no Brasil. Existe muito ruído, muita busca manual e pouca transparência sobre como transformar resultados em uma experiência realmente útil. Este projeto pega uma necessidade cotidiana e a transforma em um demo técnico que também serve como peça de DevRel.
+Buscar vagas ainda é um processo cheio de ruído para muita gente no mercado brasileiro. Entre buscas repetitivas, filtros inconsistentes e excesso de abas abertas, sobra pouco contexto sobre quais termos, formatos e localidades realmente aparecem com frequência. O objetivo deste projeto é transformar esse trabalho manual em uma experiência mais clara, reutilizável e comparável.
 
 ## Stack
 
@@ -20,7 +20,7 @@ Acompanhar vagas relevantes ainda é um problema real para devs no Brasil. Exist
 - React 19
 - TypeScript
 - Tailwind CSS
-- SerpApi JavaScript SDK
+- SDK JavaScript para busca estruturada
 - Vitest
 - Playwright
 - tsx para a CLI
@@ -33,7 +33,7 @@ Acompanhar vagas relevantes ainda é um problema real para devs no Brasil. Exist
 - modo demo com fixture local
 - rota `/api/jobs` retornando a mesma estrutura usada na UI
 - CLI com saída legível para terminal
-- Developer Inspector com request, resumo cru e exemplos de uso
+- painel técnico com request, resumo cru e exemplos de uso
 
 ## Como rodar
 
@@ -83,7 +83,7 @@ npm run cli -- --mode demo --query "engenheiro de dados remoto" --location Brazi
 curl "http://localhost:3000/api/jobs?mode=demo&preset=backend-br"
 ```
 
-### Exemplo com o SDK da SerpApi
+### Exemplo com o SDK usado no projeto
 
 ```ts
 import { getJson } from "serpapi";
@@ -130,7 +130,7 @@ npm run cli -- --mode demo --preset backend-br
 ## Roadmap próximo
 
 - adicionar screenshots e GIFs para o README
-- expandir a CLI com exportação JSON/Markdown
+- expandir a CLI com exportação JSON ou Markdown
 - adicionar mais presets para mobile, frontend e data roles
 - incluir uma versão pública hospedada
 
@@ -138,8 +138,8 @@ npm run cli -- --mode demo --preset backend-br
 
 **Título sugerido do post:**
 
-Como criei um radar de vagas para devs brasileiros com SerpApi, Next.js e TypeScript
+O que um radar de vagas revela sobre backend, dados e IA no mercado brasileiro
 
 **Ângulo sugerido:**
 
-Mostrar o projeto como uma peça de Developer Advocacy: uma integração limpa com a SerpApi aplicada a um problema real da comunidade brasileira, com transparência técnica suficiente para ensinar outras pessoas a reproduzir a ideia.
+Usar o radar como ferramenta de observação para discutir padrões de contratação, termos recorrentes, localidades e formatos de trabalho. O projeto aparece como suporte para a análise, não como protagonista promocional do texto.

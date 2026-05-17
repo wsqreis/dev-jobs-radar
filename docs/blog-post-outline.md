@@ -1,37 +1,30 @@
-# Blog post outline
+# Article outline
 
-## Primary title
+## Recommended title
 
-Como criei um radar de vagas para devs brasileiros com SerpApi, Next.js e TypeScript
+O que um radar de vagas revela sobre backend, dados e IA no mercado brasileiro
 
 ## Alternative English title
 
-Building a Developer Job Radar for Brazil with SerpApi and Next.js
+What a Job Radar Reveals About Backend, Data, and AI Roles in Brazil
 
-## Recommended angle
+## Article angle
 
-Treat the post as a Developer Advocate-style build log:
-
-- start from a real problem in the Brazilian developer market
-- show why SerpApi removes unnecessary setup friction
-- explain the product decisions, not just the code
-- highlight reuse between the web UI and the CLI
-- use the Developer Inspector as the educational bridge between raw API output and finished product
+Use the radar as a reporting tool to talk about hiring signals: recurring stack terms, role naming patterns, remote versus hybrid work, and opportunities that connect Brazil to other markets. The project supports the story, but the article itself is about reading the market with better filters.
 
 ## Suggested outline
 
-1. Why Brazilian developers need a better job radar
-2. Why I chose SerpApi for this build
-3. Designing a portfolio project that is useful and teachable
-4. Structuring the shared search layer
-5. Building the dashboard in Next.js
-6. Reusing the same logic in a CLI
-7. Creating a demo mode for public review
-8. What I would improve next
+1. Why job searching still feels noisy in Brazil
+2. What I looked for in the results
+3. Backend roles: recurring terms and expectations
+4. Data and AI roles: where demand seems to be concentrating
+5. Remote work, Portugal, and cross-border opportunities
+6. What candidates can do with those signals
+7. Where a radar like this can evolve next
 
 ## Publishing notes
 
-- Lead with the problem and audience relevance before talking about framework choices.
-- Use screenshots of the dashboard and one terminal capture of the CLI.
-- Include the SDK snippet and the local `/api/jobs` example.
-- End with a short section inviting readers to adapt the project for other search-driven workflows.
+- Open with the market problem before mentioning the tool.
+- Use two or three screenshots from the dashboard plus one CLI capture.
+- Highlight patterns you noticed instead of turning the piece into a build log.
+- End with the repository link and a short technical note for readers who want to explore the code.

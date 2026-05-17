@@ -13,13 +13,13 @@ export function DeveloperInspector({ response }: DeveloperInspectorProps) {
     <section className="rounded-3xl border border-white/10 bg-slate-900/70 p-6">
       <div className="space-y-2">
         <p className="text-sm font-medium uppercase tracking-[0.24em] text-sky-200">
-          Developer Inspector
+Painel técnico
         </p>
         <h2 className="text-2xl font-semibold text-white">
-          Como esta busca foi construída com SerpApi
+          Como esta busca foi estruturada
         </h2>
         <p className="text-sm leading-7 text-slate-300">
-          Este painel mostra a request normalizada, o resumo cru retornado pela integração e exemplos prontos para documentação, demo técnica ou conteúdo educativo.
+          Este painel mostra a request normalizada, o resumo cru retornado pela integração e exemplos prontos para documentação, análise técnica ou conteúdo educativo.
         </p>
       </div>
 
@@ -47,7 +47,7 @@ export function DeveloperInspector({ response }: DeveloperInspectorProps) {
         <div className="space-y-4">
           <div className="rounded-2xl border border-white/10 bg-slate-950/80 p-4">
             <p className="mb-3 text-xs uppercase tracking-[0.22em] text-slate-400">
-              Exemplo com SDK
+Exemplo com SDK JavaScript
             </p>
             <pre className="overflow-x-auto text-xs leading-6 text-slate-200">
               {response.examples.sdk}

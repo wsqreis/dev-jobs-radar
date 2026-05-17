@@ -42,10 +42,10 @@ export default async function Home({ searchParams }: HomePageProps) {
           <div className="space-y-5">
             <div className="flex flex-wrap items-center gap-3 text-sm text-sky-200">
               <span className="rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1">
-                Portfólio DevRel
+                Radar de mercado
               </span>
               <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1">
-                SerpApi Google Jobs
+                Google Jobs
               </span>
               <span className="rounded-full border border-violet-400/30 bg-violet-400/10 px-3 py-1">
                 PT-BR first
@@ -60,7 +60,7 @@ export default async function Home({ searchParams }: HomePageProps) {
                 Descubra vagas de tecnologia com foco em Brasil, Portugal e trabalho remoto.
               </h1>
               <p className="max-w-3xl text-lg leading-8 text-slate-300">
-                Um radar de vagas construído com SerpApi, Next.js e TypeScript para demonstrar integração técnica, utilidade real e narrativa de conteúdo para a comunidade lusófona.
+                Explore sinais do mercado em buscas de backend, dados, IA e trabalho remoto com filtros pensados para Brasil, Portugal e oportunidades distribuídas.
               </p>
             </div>
           </div>
@@ -69,7 +69,7 @@ export default async function Home({ searchParams }: HomePageProps) {
             <StatCard
               label="Modo ativo"
               value={response.meta.resolvedMode === "demo" ? "Demo" : "Live"}
-              detail={response.meta.source === "fixture" ? "Usando fixture pública para avaliação rápida." : "Consultando a API da SerpApi em tempo real."}
+              detail={response.meta.source === "fixture" ? "Usando fixture pública para avaliação rápida." : "Consultando a API em tempo real."}
             />
             <StatCard
               label="Resultados"
@@ -127,7 +127,7 @@ export default async function Home({ searchParams }: HomePageProps) {
                 O CLI reaproveita exatamente a mesma função de busca e o mesmo processo de normalização, o que facilita transformar esta demo em conteúdo técnico ou automações simples.
               </p>
               <p>
-                O Developer Inspector deixa visível o caminho completo entre a query da pessoa usuária, a chamada do SDK e a resposta resumida que vai para a interface.
+                O painel técnico deixa visível o caminho completo entre a query da pessoa usuária, a chamada de busca e a resposta resumida que vai para a interface.
               </p>
             </div>
           </aside>
