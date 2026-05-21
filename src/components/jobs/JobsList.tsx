@@ -1,9 +1,14 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { ArrowLeft, ArrowRight, LoaderCircle } from "lucide-react";
 import { JobCard } from "@/components/jobs/JobCard";
-import type { JobSearchRequest, JobsResponseMeta, NormalizedJob } from "@/lib/jobs/types";
+import type {
+  JobSearchRequest,
+  JobsResponseMeta,
+  NormalizedJob,
+} from "@/lib/jobs/types";
 
 interface JobsListProps {
   jobs: NormalizedJob[];
@@ -18,13 +23,13 @@ function buildPageHref(
   pageTokenTrail?: string[],
 ) {
   const searchParams = new URLSearchParams({
-    q: request.query,
-    location: request.location,
     gl: request.gl,
     hl: request.hl,
+    location: request.location,
     mode: request.mode,
-    pageSize: String(request.pageSize),
     page: String(page),
+    pageSize: String(request.pageSize),
+    q: request.query,
   });
 
   if (request.preset) {
@@ -53,27 +58,27 @@ function buildPageHref(
 export function JobsList({ jobs, request, meta }: JobsListProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [pendingDirection, setPendingDirection] = useState<"previous" | "next" | null>(null);
+  const [pendingDirection, setPendingDirection] = useState<"next" | "previous" | null>(null);
+
   if (jobs.length === 0) {
     return (
-      <section className="rounded-3xl border border-dashed border-white/10 bg-slate-900/40 p-10 text-center text-slate-400">
-        Nenhuma vaga encontrada para os filtros atuais.
+      <section className="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
+        <p className="text-lg font-semibold text-slate-950">Nenhuma vaga encontrada</p>
+        <p className="mt-2 text-sm text-slate-500">Ajuste a busca ou troque o preset ativo.</p>
       </section>
     );
   }
 
-  const previousPageToken = request.page > 2
-    ? request.pageTokenTrail[request.page - 3]
-    : undefined;
-  const previousPageTrail = request.page > 2
-    ? request.pageTokenTrail.slice(0, request.page - 2)
-    : [];
+  const previousPageToken =
+    request.page > 2 ? request.pageTokenTrail[request.page - 3] : undefined;
+  const previousPageTrail =
+    request.page > 2 ? request.pageTokenTrail.slice(0, request.page - 2) : [];
   const nextPageTrail = meta.nextPageToken
     ? [...request.pageTokenTrail, meta.nextPageToken]
     : request.pageTokenTrail;
 
   function navigateToPage(
-    direction: "previous" | "next",
+    direction: "next" | "previous",
     page: number,
     pageToken?: string,
     pageTokenTrail?: string[],
@@ -86,35 +91,41 @@ export function JobsList({ jobs, request, meta }: JobsListProps) {
 
   return (
     <section className="space-y-4">
-      {isPending ? (
-        <div className="rounded-2xl border border-sky-400/20 bg-sky-400/10 px-4 py-3 text-sm text-sky-100">
-          Carregando resultados...
-        </div>
-      ) : null}
-
-      <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-400">
-        <p>
+      <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-sm text-slate-600">
           Página {meta.pageIndex} · {meta.totalJobs} resultado(s) nesta página
-        </p>
-        <div className="flex flex-wrap items-center gap-3">
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {isPending ? (
+            <span className="inline-flex items-center gap-2 text-sm text-blue-700">
+              <LoaderCircle aria-hidden="true" className="animate-spin" size={16} />
+              Carregando...
+            </span>
+          ) : null}
           {meta.hasPreviousPage ? (
             <button
-              className="rounded-full border border-slate-500/60 bg-slate-800 px-4 py-2 text-sm font-medium text-slate-100 transition hover:border-sky-300 hover:bg-slate-700 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-10 items-center gap-2 rounded-md border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
               disabled={isPending}
-              onClick={() => navigateToPage("previous", request.page - 1, previousPageToken, previousPageTrail)}
+              onClick={() =>
+                navigateToPage("previous", request.page - 1, previousPageToken, previousPageTrail)
+              }
               type="button"
             >
+              <ArrowLeft aria-hidden="true" size={16} />
               {isPending && pendingDirection === "previous" ? "Carregando..." : "Anterior"}
             </button>
           ) : null}
           {meta.hasNextPage ? (
             <button
-              className="rounded-full bg-sky-300 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-sky-200 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-10 items-center gap-2 rounded-md bg-slate-950 px-4 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
               disabled={isPending}
-              onClick={() => navigateToPage("next", request.page + 1, meta.nextPageToken, nextPageTrail)}
+              onClick={() =>
+                navigateToPage("next", request.page + 1, meta.nextPageToken, nextPageTrail)
+              }
               type="button"
             >
               {isPending && pendingDirection === "next" ? "Carregando..." : "Próxima"}
+              <ArrowRight aria-hidden="true" size={16} />
             </button>
           ) : null}
         </div>
@@ -122,7 +133,7 @@ export function JobsList({ jobs, request, meta }: JobsListProps) {
 
       <div className="grid gap-4">
         {jobs.map((job) => (
-          <JobCard key={job.id} job={job} />
+          <JobCard job={job} key={job.id} />
         ))}
       </div>
     </section>

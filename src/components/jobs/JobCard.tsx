@@ -1,63 +1,115 @@
 import type { NormalizedJob } from "@/lib/jobs/types";
+import { ExpandableDescription } from "@/components/jobs/ExpandableDescription";
+import {
+  ArrowUpRight,
+  BriefcaseBusiness,
+  Building2,
+  Clock3,
+  ExternalLink,
+  MapPin,
+} from "lucide-react";
 
 interface JobCardProps {
   job: NormalizedJob;
 }
 
+function getInitials(companyName: string) {
+  return companyName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase())
+    .join("");
+}
+
 export function JobCard({ job }: JobCardProps) {
+  const primaryApply = job.applyOptions[0];
+  const secondaryLinks = [
+    ...job.applyOptions.slice(1, 2),
+    ...job.relatedLinks.slice(0, 1),
+  ];
+
   return (
-    <article className="rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-lg shadow-slate-950/20">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="space-y-3">
-          <div className="space-y-1">
-            <p className="text-sm text-sky-200">{job.companyName}</p>
-            <h3 className="text-2xl font-semibold text-white">{job.title}</h3>
-            <p className="text-sm text-slate-400">
-              {job.location}
-              {job.scheduleType ? ` · ${job.scheduleType}` : ""}
-              {job.postedAt ? ` · ${job.postedAt}` : ""}
-            </p>
-          </div>
-
-          <p className="max-w-3xl text-sm leading-7 text-slate-300">
-            {job.description}
-          </p>
-
-          {job.detectedExtensions.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {job.detectedExtensions.map((extension) => (
-                <span
-                  key={`${job.id}-${extension}`}
-                  className="rounded-full border border-sky-400/20 bg-sky-400/10 px-3 py-1 text-xs text-sky-100"
-                >
-                  {extension}
-                </span>
-              ))}
+    <article className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-200 hover:shadow-md">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0 flex-1">
+          <div className="flex gap-4">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-sm font-semibold text-slate-700">
+              {getInitials(job.companyName) || <Building2 aria-hidden="true" size={18} />}
             </div>
-          ) : null}
+            <div className="min-w-0 space-y-2">
+              <div>
+                <p className="flex items-center gap-1.5 text-sm font-medium text-blue-700">
+                  <Building2 aria-hidden="true" size={15} />
+                  {job.companyName}
+                  {job.via ? <span className="text-slate-400">via {job.via}</span> : null}
+                </p>
+                <h3 className="mt-1 text-xl font-semibold tracking-tight text-slate-950">
+                  {job.title}
+                </h3>
+              </div>
+
+              <div className="flex flex-wrap gap-2 text-sm text-slate-600">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1">
+                  <MapPin aria-hidden="true" size={14} />
+                  {job.location}
+                </span>
+                {job.scheduleType ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-700">
+                    <BriefcaseBusiness aria-hidden="true" size={14} />
+                    {job.scheduleType}
+                  </span>
+                ) : null}
+                {job.postedAt ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-amber-700">
+                    <Clock3 aria-hidden="true" size={14} />
+                    {job.postedAt}
+                  </span>
+                ) : null}
+              </div>
+
+              <ExpandableDescription text={job.description} />
+
+              {job.detectedExtensions.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {job.detectedExtensions.slice(0, 5).map((extension) => (
+                    <span
+                      className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600"
+                      key={`${job.id}-${extension}`}
+                    >
+                      {extension}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          </div>
         </div>
 
-        <div className="flex min-w-44 flex-col gap-3">
-          {job.applyOptions.slice(0, 2).map((option) => (
+        <div className="flex shrink-0 flex-col gap-2 sm:min-w-44">
+          {primaryApply ? (
             <a
-              key={`${job.id}-${option.url}`}
-              className="rounded-full border border-sky-300 bg-sky-300 px-4 py-2 text-center text-sm font-semibold text-slate-950 transition hover:border-sky-200 hover:bg-sky-200"
-              href={option.url}
+              aria-label={`Candidatar-se para ${job.title} em ${job.companyName}`}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-slate-950 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
+              href={primaryApply.url}
               rel="noreferrer"
               target="_blank"
             >
-              {option.title}
+              Candidatar
+              <ArrowUpRight aria-hidden="true" size={16} />
             </a>
-          ))}
-          {job.relatedLinks.slice(0, 1).map((link) => (
+          ) : null}
+          {secondaryLinks.map((link) => (
             <a
-              key={`${job.id}-${link.url}`}
-              className="rounded-full border border-white/10 px-4 py-2 text-center text-sm text-slate-300 transition hover:border-slate-400 hover:text-white"
+              aria-label={`Ver detalhes de ${job.title} em ${job.companyName}`}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
               href={link.url}
+              key={`${job.id}-${link.url}`}
               rel="noreferrer"
               target="_blank"
             >
-              {link.title}
+              Detalhes
+              <ExternalLink aria-hidden="true" size={15} />
             </a>
           ))}
         </div>

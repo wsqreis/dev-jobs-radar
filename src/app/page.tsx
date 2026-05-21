@@ -1,9 +1,15 @@
-import { DeveloperInspector } from "@/components/developer-inspector/DeveloperInspector";
-import { JobsList } from "@/components/jobs/JobsList";
+import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
 import { SearchForm } from "@/components/filters/SearchForm";
 import { StatCard } from "@/components/shared/StatCard";
 import { resolveJobSearchRequest } from "@/lib/jobs/presets";
 import { searchJobs } from "@/lib/jobs/searchJobs";
+import {
+  Activity,
+  DatabaseZap,
+  Globe2,
+  MapPin,
+  RadioTower,
+} from "lucide-react";
 
 type HomePageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -34,112 +40,112 @@ export default async function Home({ searchParams }: HomePageProps) {
   const resolvedSearchParams = await searchParams;
   const request = resolveJobSearchRequest(toSearchParamsRecord(resolvedSearchParams));
   const response = await searchJobs(request);
+  const activeMode = response.meta.resolvedMode === "demo" ? "Demo" : "Live";
+  const topCompany = response.insights.topCompanies[0];
+  const topLocation = response.insights.topLocations[0];
+  const topSchedule = response.insights.topSchedules[0];
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.18),_transparent_35%),linear-gradient(180deg,_#0f172a_0%,_#111827_100%)] px-6 py-12 text-slate-50 sm:px-10 lg:px-16">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
-        <section className="grid gap-6 rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl shadow-slate-950/30 backdrop-blur xl:grid-cols-[1.15fr_0.85fr] xl:p-10">
-          <div className="space-y-5">
-            <div className="flex flex-wrap items-center gap-3 text-sm text-sky-200">
-              <span className="rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1">
-                Radar de mercado
-              </span>
-              <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1">
-                Google Jobs
-              </span>
-              <span className="rounded-full border border-violet-400/30 bg-violet-400/10 px-3 py-1">
-                PT-BR first
-              </span>
+    <main className="min-h-screen bg-[#f5f7fb] text-slate-950">
+      <header className="border-b border-slate-200 bg-white/95">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+          <div className="flex items-center gap-3">
+            <div className="flex size-11 items-center justify-center rounded-lg bg-slate-950 text-white">
+              <RadioTower aria-hidden="true" size={22} strokeWidth={1.8} />
             </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-950">Dev Jobs Radar</p>
+              <p className="text-xs text-slate-500">Google Jobs intelligence</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-emerald-700">
+              <Activity aria-hidden="true" size={14} />
+              {activeMode}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-600">
+              <Globe2 aria-hidden="true" size={14} />
+              {response.request.gl.toUpperCase()} / {response.request.hl}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-600">
+              <MapPin aria-hidden="true" size={14} />
+              {response.request.location}
+            </span>
+          </div>
+        </div>
+      </header>
 
-            <div className="space-y-4">
-              <p className="text-sm font-medium uppercase tracking-[0.24em] text-sky-200">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <section className="grid gap-6 lg:grid-cols-[1fr_360px] lg:items-end">
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm">
+              <DatabaseZap aria-hidden="true" size={14} />
+              {response.meta.source === "fixture" ? "Demo dataset" : "SerpApi live feed"}
+            </div>
+            <div className="space-y-3">
+              <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
                 Dev Jobs Radar
-              </p>
-              <h1 className="max-w-4xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-                Descubra vagas de tecnologia com foco em Brasil, Portugal e trabalho remoto.
               </h1>
-              <p className="max-w-3xl text-lg leading-8 text-slate-300">
-                Explore sinais do mercado em buscas de backend, dados, IA e trabalho remoto com filtros pensados para Brasil, Portugal e oportunidades distribuídas.
+              <p className="max-w-3xl text-base leading-7 text-slate-600 sm:text-lg">
+                Painel de vagas para backend, dados, IA e trabalho remoto no Brasil e em Portugal.
               </p>
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3 xl:grid-cols-1">
-            <StatCard
-              label="Modo ativo"
-              value={response.meta.resolvedMode === "demo" ? "Demo" : "Live"}
-              detail={response.meta.source === "fixture" ? "Usando fixture pública para avaliação rápida." : "Consultando a API em tempo real."}
-            />
-            <StatCard
-              label="Resultados"
-              value={String(response.meta.totalJobs)}
-              detail={`Página ${response.meta.pageIndex} · busca atual: ${response.request.query}`}
-            />
-            <StatCard
-              label="Local base"
-              value={response.request.location}
-              detail={`gl=${response.request.gl} · hl=${response.request.hl}`}
-            />
+          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+            <div className="border-b border-slate-200 px-5 py-4">
+              <p className="text-xs font-medium uppercase text-slate-500">Busca atual</p>
+              <p className="mt-1 line-clamp-2 text-lg font-semibold text-slate-950">
+                {response.request.query}
+              </p>
+            </div>
+            <div className="grid grid-cols-3 divide-x divide-slate-200 text-center">
+              <div className="px-3 py-4">
+                <p className="text-2xl font-semibold">{response.meta.totalJobs}</p>
+                <p className="text-xs text-slate-500">vagas</p>
+              </div>
+              <div className="px-3 py-4">
+                <p className="text-2xl font-semibold">{response.meta.pageIndex}</p>
+                <p className="text-xs text-slate-500">página</p>
+              </div>
+              <div className="px-3 py-4">
+                <p className="text-2xl font-semibold">{response.meta.pageSize}</p>
+                <p className="text-xs text-slate-500">lote</p>
+              </div>
+            </div>
           </div>
+        </section>
+
+        <section className="grid gap-4 md:grid-cols-3">
+          <StatCard
+            detail={topCompany ? `${topCompany.count} vaga(s)` : undefined}
+            label="Empresa em destaque"
+            tone="blue"
+            value={topCompany?.name ?? "Sem dados"}
+          />
+          <StatCard
+            detail={topLocation ? `${topLocation.count} vaga(s)` : undefined}
+            label="Local mais frequente"
+            tone="green"
+            value={topLocation?.name ?? "Sem dados"}
+          />
+          <StatCard
+            detail={topSchedule ? `${topSchedule.count} vaga(s)` : undefined}
+            label="Formato comum"
+            tone="amber"
+            value={topSchedule?.name ?? "Sem dados"}
+          />
         </section>
 
         <SearchForm request={response.request} />
 
         {response.meta.warning ? (
-          <section className="rounded-3xl border border-amber-400/30 bg-amber-400/10 px-5 py-4 text-sm text-amber-100">
+          <section className="rounded-lg border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800 shadow-sm">
             {response.meta.warning}
           </section>
         ) : null}
 
-        <section className="grid gap-4 md:grid-cols-3">
-          <StatCard
-            label="Empresa em destaque"
-            value={response.insights.topCompanies[0]?.name ?? "Sem dados"}
-            detail={response.insights.topCompanies[0] ? `${response.insights.topCompanies[0].count} vaga(s)` : undefined}
-          />
-          <StatCard
-            label="Local mais frequente"
-            value={response.insights.topLocations[0]?.name ?? "Sem dados"}
-            detail={response.insights.topLocations[0] ? `${response.insights.topLocations[0].count} vaga(s)` : undefined}
-          />
-          <StatCard
-            label="Formato comum"
-            value={response.insights.topSchedules[0]?.name ?? "Sem dados"}
-            detail={response.insights.topSchedules[0] ? `${response.insights.topSchedules[0].count} vaga(s)` : undefined}
-          />
-        </section>
-
-        <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-semibold text-white">Vagas encontradas</h2>
-                <p className="text-sm text-slate-400">
-                  Resultados normalizados para uso em UI e CLI.
-                </p>
-              </div>
-            </div>
-            <JobsList jobs={response.jobs} meta={response.meta} request={response.request} />
-          </div>
-
-          <aside className="rounded-3xl border border-white/10 bg-slate-900/70 p-6">
-            <h2 className="text-xl font-semibold text-white">Resumo técnico</h2>
-            <div className="mt-4 space-y-4 text-sm leading-7 text-slate-300">
-              <p>
-                Esta página lê os filtros diretamente da URL, resolve o modo demo ou live no servidor e usa a mesma camada compartilhada que abastece a rota <strong>/api/jobs</strong>.
-              </p>
-              <p>
-                O CLI reaproveita exatamente a mesma função de busca e o mesmo processo de normalização, o que facilita transformar esta demo em conteúdo técnico ou automações simples.
-              </p>
-              <p>
-                O painel técnico deixa visível o caminho completo entre a query da pessoa usuária, a chamada de busca e a resposta resumida que vai para a interface.
-              </p>
-            </div>
-          </aside>
-        </section>
-
-        <DeveloperInspector response={response} />
+        <DashboardTabs response={response} />
       </div>
     </main>
   );

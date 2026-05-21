@@ -5,16 +5,18 @@ test("renders the dashboard in demo mode", async ({ page }) => {
 
   await expect(
     page.getByRole("heading", {
-      name: "Descubra vagas de tecnologia com foco em Brasil, Portugal e trabalho remoto.",
+      name: "Dev Jobs Radar",
     }),
   ).toBeVisible();
 
   await expect(page.getByRole("heading", { name: "Vagas encontradas" })).toBeVisible();
   await expect(page.getByText("Desenvolvedor Backend Pleno")).toBeVisible();
-  await expect(page.getByText("Painel técnico", { exact: true })).toBeVisible();
   await expect(page.getByText("Página 1 · 2 resultado(s) nesta página")).toBeVisible();
   await expect(page.getByRole("button", { name: "Próxima" })).toBeVisible();
   await expect(page.locator("#datePosted")).toHaveValue("24h");
+
+  await page.getByRole("button", { name: "Painel técnico" }).click();
+  await expect(page.getByRole("heading", { name: "Payload da busca" })).toBeVisible();
 });
 
 test("changes query and location when a preset is selected", async ({ page }) => {

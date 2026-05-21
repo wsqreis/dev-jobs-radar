@@ -117,13 +117,13 @@ Copie `.env.example` para `.env.local`.
 
 ```bash
 SERPAPI_API_KEY=
-SERPAPI_DEMO_MODE=true
+SERPAPI_DEMO_MODE=false
 ```
 
 Notas:
 
-- `SERPAPI_DEMO_MODE=true` mantém o demo mode como caminho padrão no ambiente local.
-- Para validar buscas reais, defina `SERPAPI_API_KEY` e use `mode=live`.
+- Com `SERPAPI_API_KEY` definido e `SERPAPI_DEMO_MODE=false`, `mode=auto` resolve para dados live.
+- Use `SERPAPI_DEMO_MODE=true` ou `mode=demo` apenas quando quiser usar o fixture intencionalmente.
 
 ### 3. Rode a aplicação
 

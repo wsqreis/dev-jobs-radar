@@ -1,8 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import {
+  CalendarClock,
+  Globe2,
+  Languages,
+  LoaderCircle,
+  MapPin,
+  RotateCcw,
+  Search,
+  SlidersHorizontal,
+  Sparkles,
+} from "lucide-react";
 import { jobSearchPresets } from "@/lib/jobs/presets";
 import type { JobSearchRequest } from "@/lib/jobs/types";
 
@@ -36,31 +47,17 @@ interface SearchFormProps {
 export function SearchForm({ request }: SearchFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [pendingTarget, setPendingTarget] = useState<"search" | "preset" | null>(null);
+  const [pendingTarget, setPendingTarget] = useState<"preset" | "search" | null>(null);
   const [pendingPresetId, setPendingPresetId] = useState<string | null>(null);
-  const [formValues, setFormValues] = useState(() => ({
-    q: request.query,
-    location: request.location,
-    gl: request.gl,
-    hl: request.hl,
-    mode: request.mode,
-    pageSize: String(request.pageSize),
-    datePosted: request.datePosted ?? "",
-  }));
-
-  useEffect(() => {
-    setFormValues({
-      q: request.query,
-      location: request.location,
-      gl: request.gl,
-      hl: request.hl,
-      mode: request.mode,
-      pageSize: String(request.pageSize),
-      datePosted: request.datePosted ?? "",
-    });
-    setPendingTarget(null);
-    setPendingPresetId(null);
-  }, [request]);
+  const formKey = [
+    request.query,
+    request.location,
+    request.gl,
+    request.hl,
+    request.mode,
+    request.pageSize,
+    request.datePosted ?? "",
+  ].join("|");
 
   function handleSubmit(formData: FormData) {
     const searchParams = new URLSearchParams();
@@ -93,100 +90,128 @@ export function SearchForm({ request }: SearchFormProps) {
   return (
     <form
       action={handleSubmit}
-      className="grid gap-4 rounded-3xl border border-white/10 bg-slate-900/70 p-6"
+      className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
+      key={formKey}
     >
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-200" htmlFor="q">
-          Busca principal
-        </label>
-        <input
-          className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-400"
-          onChange={(event) => setFormValues((current) => ({ ...current, q: event.target.value }))}
-          value={formValues.q}
-          id="q"
-          name="q"
-          placeholder="desenvolvedor backend remoto"
-          type="text"
-        />
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
+        <div className="min-w-0 flex-1 space-y-2">
+          <label className="text-sm font-medium text-slate-700" htmlFor="q">
+            Busca principal
+          </label>
+          <div className="relative">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              size={18}
+            />
+            <input
+              className="h-12 w-full rounded-md border border-slate-300 bg-white py-3 pl-10 pr-4 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+              defaultValue={request.query}
+              id="q"
+              name="q"
+              placeholder="desenvolvedor backend remoto"
+              type="text"
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:w-[520px] lg:grid-cols-4">
+          <Field
+            htmlFor="location"
+            icon={<MapPin aria-hidden="true" size={16} />}
+            label="Localização"
+          >
+            <input
+              className="field-control"
+              defaultValue={request.location}
+              id="location"
+              name="location"
+              placeholder="Brazil"
+              type="text"
+            />
+          </Field>
+
+          <Field htmlFor="gl" icon={<Globe2 aria-hidden="true" size={16} />} label="gl">
+            <input
+              className="field-control"
+              defaultValue={request.gl}
+              id="gl"
+              name="gl"
+              placeholder="br"
+              type="text"
+            />
+          </Field>
+
+          <Field htmlFor="hl" icon={<Languages aria-hidden="true" size={16} />} label="hl">
+            <input
+              className="field-control"
+              defaultValue={request.hl}
+              id="hl"
+              name="hl"
+              placeholder="pt-br"
+              type="text"
+            />
+          </Field>
+
+          <Field
+            htmlFor="mode"
+            icon={<SlidersHorizontal aria-hidden="true" size={16} />}
+            label="Modo"
+          >
+            <select
+              className="field-control"
+              defaultValue={request.mode}
+              id="mode"
+              name="mode"
+            >
+              <option value="auto">Auto</option>
+              <option value="demo">Demo</option>
+              <option value="live">Live</option>
+            </select>
+          </Field>
+        </div>
       </div>
 
-      {isPending ? (
-        <div className="rounded-2xl border border-sky-400/20 bg-sky-400/10 px-4 py-3 text-sm text-sky-100">
-          Carregando resultados...
-        </div>
-      ) : null}
-
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+      <div className="mt-4 grid gap-3 md:grid-cols-[1fr_180px_180px]">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-200" htmlFor="location">
-            Localização
-          </label>
-          <input
-            className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-400"
-            onChange={(event) => setFormValues((current) => ({ ...current, location: event.target.value }))}
-            value={formValues.location}
-            id="location"
-            name="location"
-            placeholder="Brazil"
-            type="text"
-          />
-        </div>
+          <p className="flex items-center gap-2 text-sm font-medium text-slate-700">
+            <Sparkles aria-hidden="true" size={16} />
+            Presets
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {jobSearchPresets.map((preset) => {
+              const href = buildPresetHref(request, preset.id);
+              const isActive = request.preset === preset.id;
+              const isLoading =
+                isPending && pendingTarget === "preset" && pendingPresetId === preset.id;
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-200" htmlFor="gl">
-            gl
-          </label>
-          <input
-            className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-400"
-            onChange={(event) => setFormValues((current) => ({ ...current, gl: event.target.value }))}
-            value={formValues.gl}
-            id="gl"
-            name="gl"
-            placeholder="br"
-            type="text"
-          />
+              return (
+                <button
+                  className={`inline-flex h-10 items-center rounded-full border px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                    isActive
+                      ? "border-slate-950 bg-slate-950 text-white shadow-sm"
+                      : "border-slate-200 bg-slate-50 text-slate-700 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                  }`}
+                  disabled={isPending}
+                  key={preset.id}
+                  onClick={() => handlePresetNavigation(href, preset.id)}
+                  type="button"
+                >
+                  {isLoading ? "Carregando..." : preset.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-200" htmlFor="hl">
-            hl
-          </label>
-          <input
-            className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-400"
-            onChange={(event) => setFormValues((current) => ({ ...current, hl: event.target.value }))}
-            value={formValues.hl}
-            id="hl"
-            name="hl"
-            placeholder="pt-br"
-            type="text"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-200" htmlFor="mode">
-            Modo
-          </label>
+        <Field
+          htmlFor="pageSize"
+          icon={<SlidersHorizontal aria-hidden="true" size={16} />}
+          label="Resultados"
+        >
           <select
-            className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-400 [&>option]:bg-slate-950 [&>option]:text-white"
-            onChange={(event) => setFormValues((current) => ({ ...current, mode: event.target.value as JobSearchRequest["mode"] }))}
-            value={formValues.mode}
-            id="mode"
-            name="mode"
-          >
-            <option value="auto">Auto</option>
-            <option value="demo">Demo</option>
-            <option value="live">Live</option>
-          </select>
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-200" htmlFor="pageSize">
-            Resultados por página
-          </label>
-          <select
-            className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-400 [&>option]:bg-slate-950 [&>option]:text-white"
-            onChange={(event) => setFormValues((current) => ({ ...current, pageSize: event.target.value }))}
-            value={formValues.pageSize}
+            className="field-control"
+            defaultValue={String(request.pageSize)}
             id="pageSize"
             name="pageSize"
           >
@@ -196,16 +221,16 @@ export function SearchForm({ request }: SearchFormProps) {
               </option>
             ))}
           </select>
-        </div>
+        </Field>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-200" htmlFor="datePosted">
-            Data da vaga
-          </label>
+        <Field
+          htmlFor="datePosted"
+          icon={<CalendarClock aria-hidden="true" size={16} />}
+          label="Data da vaga"
+        >
           <select
-            className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-400 [&>option]:bg-slate-950 [&>option]:text-white"
-            onChange={(event) => setFormValues((current) => ({ ...current, datePosted: event.target.value }))}
-            value={formValues.datePosted}
+            className="field-control"
+            defaultValue={request.datePosted ?? ""}
             id="datePosted"
             name="datePosted"
           >
@@ -215,46 +240,69 @@ export function SearchForm({ request }: SearchFormProps) {
               </option>
             ))}
           </select>
-        </div>
+        </Field>
       </div>
 
-      <div className="space-y-3">
-        <p className="text-sm font-medium text-slate-200">Presets</p>
-        <div className="flex flex-wrap gap-3">
-          {jobSearchPresets.map((preset) => {
-            const href = buildPresetHref(request, preset.id);
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4">
+        {isPending ? (
+          <div className="inline-flex items-center gap-2 text-sm text-blue-700">
+            <LoaderCircle aria-hidden="true" className="animate-spin" size={16} />
+            Carregando resultados...
+          </div>
+        ) : (
+          <div className="text-sm text-slate-500">
+            {request.location} · {request.gl}/{request.hl}
+          </div>
+        )}
 
-            return (
-              <button
-                key={preset.id}
-                className={`rounded-full border px-4 py-2 text-sm font-medium transition ${request.preset === preset.id ? "border-sky-300 bg-sky-300 text-slate-950 shadow-sm shadow-sky-950/20" : "border-slate-500/60 bg-slate-800 text-slate-100 hover:border-sky-300 hover:bg-slate-700 hover:text-white"} disabled:cursor-not-allowed disabled:opacity-60`}
-                disabled={isPending}
-                onClick={() => handlePresetNavigation(href, preset.id)}
-                type="button"
-              >
-                {isPending && pendingTarget === "preset" && pendingPresetId === preset.id ? "Carregando..." : preset.label}
-              </button>
-            );
-          })}
+        <div className="flex flex-wrap items-center gap-2">
+          <input name="page" type="hidden" value="1" />
+          <Link
+            className="inline-flex h-11 items-center gap-2 rounded-md border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            href="/"
+          >
+            <RotateCcw aria-hidden="true" size={16} />
+            Limpar
+          </Link>
+          <button
+            className="inline-flex h-11 items-center gap-2 rounded-md bg-slate-950 px-5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isPending}
+            type="submit"
+          >
+            {isPending && pendingTarget === "search" ? (
+              <LoaderCircle aria-hidden="true" className="animate-spin" size={16} />
+            ) : (
+              <Search aria-hidden="true" size={16} />
+            )}
+            {isPending && pendingTarget === "search" ? "Buscando..." : "Buscar vagas"}
+          </button>
         </div>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3">
-        <input name="page" type="hidden" value="1" />
-        <button
-          className="rounded-full bg-sky-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-200 disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={isPending}
-          type="submit"
-        >
-          {isPending && pendingTarget === "search" ? "Buscando..." : "Buscar vagas"}
-        </button>
-        <Link
-          className="rounded-full border border-slate-500/60 bg-slate-800 px-5 py-3 text-sm font-medium text-slate-100 transition hover:border-sky-300 hover:bg-slate-700 hover:text-white"
-          href="/"
-        >
-          Limpar filtros
-        </Link>
       </div>
     </form>
+  );
+}
+
+function Field({
+  children,
+  htmlFor,
+  icon,
+  label,
+}: {
+  children: React.ReactNode;
+  htmlFor: string;
+  icon: React.ReactNode;
+  label: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <label
+        className="flex items-center gap-1.5 text-sm font-medium text-slate-700"
+        htmlFor={htmlFor}
+      >
+        <span className="text-slate-400">{icon}</span>
+        {label}
+      </label>
+      {children}
+    </div>
   );
 }

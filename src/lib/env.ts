@@ -6,7 +6,7 @@ export function getSerpApiKey() {
 }
 
 export function isDemoModeEnabled() {
-  return process.env.SERPAPI_DEMO_MODE !== "false";
+  return process.env.SERPAPI_DEMO_MODE === "true";
 }
 
 export function resolveRuntimeMode(
